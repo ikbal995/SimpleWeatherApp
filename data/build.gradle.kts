@@ -42,7 +42,9 @@ dependencies {
     implementation(libs.hilt)
     implementation(libs.moshi)
     implementation(libs.retrofit)
+    implementation(libs.moshi.converter)
     ksp (libs.hilt.compiler)
+    ksp (libs.moshi.codegen)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -8,6 +8,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -20,6 +21,7 @@ object RetrofitModule {
     @Provides
     @Singleton
     fun provideMoshi(): Moshi = Moshi.Builder()
+        //.add(KotlinJsonAdapterFactory())
         .build()
 
     @Provides
@@ -51,6 +53,7 @@ object RetrofitModule {
     @Singleton
     fun provideRetrofit(moshi: Moshi, okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
         .client(okHttpClient)
         .build()
 

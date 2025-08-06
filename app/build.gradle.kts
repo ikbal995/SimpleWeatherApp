@@ -54,6 +54,8 @@ dependencies {
     testImplementation(libs.junit)
     implementation(libs.hilt)
     implementation(libs.kotlin)
+    implementation(libs.hilt.navigation)
+    implementation(libs.coil)
     ksp(libs.hilt.compiler)
 
     androidTestImplementation(libs.androidx.junit)
