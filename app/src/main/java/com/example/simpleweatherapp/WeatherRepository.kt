@@ -1,8 +1,8 @@
 package com.example.simpleweatherapp
 
-import WeatherResponse
+import com.example.data.ui.WeatherModel
 import kotlinx.coroutines.flow.Flow
 
 interface WeatherRepository {
-    fun fetchWeather(city: String): Flow<NetworkState<WeatherResponse>>
+    fun fetchWeather(city: String): Flow<NetworkState<WeatherModel>>
 }

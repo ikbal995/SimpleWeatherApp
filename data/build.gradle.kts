@@ -43,6 +43,7 @@ dependencies {
     implementation(libs.moshi)
     implementation(libs.retrofit)
     implementation(libs.moshi.converter)
+    implementation(libs.data.store)
     ksp (libs.hilt.compiler)
     ksp (libs.moshi.codegen)
 

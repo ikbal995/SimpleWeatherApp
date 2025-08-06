@@ -1,6 +1,5 @@
 package com.example.simpleweatherapp
 
-import WeatherResponse
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,9 +17,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.data.remote.errorhandling.WeatherError
+import com.example.data.ui.WeatherModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -45,18 +48,23 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun WeatherApp(viewModel: WeatherViewModel = hiltViewModel()) {
     val state = viewModel.weatherState.collectAsState()
-    val city = remember { mutableStateOf("") }
+    val lastCity by viewModel.lastCity.collectAsState()
+    var city by remember { mutableStateOf("") }
 
-    Spacer(modifier = Modifier.height(16.dp))
+    LaunchedEffect(lastCity) {
+        if (lastCity.isNotEmpty()) {
+            city = lastCity
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(vertical = 32.dp, horizontal = 16.dp),
         verticalArrangement = Arrangement.Top
     ) {
         OutlinedTextField(
-            value = city.value,
-            onValueChange = { city.value = it },
+            value = city,
+            onValueChange = { city = it },
             label = { Text("Enter city") },
             modifier = Modifier.fillMaxWidth()
         )
@@ -64,35 +72,37 @@ fun WeatherApp(viewModel: WeatherViewModel = hiltViewModel()) {
         Spacer(modifier = Modifier.height(8.dp))
 
         Button(
-            onClick = { viewModel.getWeather(city.value) },
+            onClick = { viewModel.getWeather(city) },
             modifier = Modifier.align(Alignment.End),
-            enabled = city.value.isNotEmpty()
+            enabled = city.isNotEmpty()
         ) {
             Text("Search")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
+        val modifier = Modifier.align(Alignment.CenterHorizontally)
         when (val result = state.value) {
             is NetworkState.Loading -> {
-                CircularProgressIndicator()
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
             }
 
-            is NetworkState.Success<WeatherResponse> -> {
+            is NetworkState.Success<WeatherModel> -> {
                 val weather = result.data
-                val info = weather.weather.firstOrNull()
-                weather
+                val info = weather.weatherInfo.firstOrNull()
 
-                Text("City: ${weather.cityName}")
-                Text("Temperature: ${weather.main.temp}°C")
-                Text("Condition: ${info?.mainCondition} (${info?.description})")
+                Text("City: ${weather.cityName}", modifier = modifier)
+                Text("Temperature: ${weather.temperature}°C", modifier = modifier)
+                Text(
+                    "Condition: ${info?.mainCondition} (${info?.description})",
+                    modifier = modifier
+                )
 
                 info?.icon?.let {
                     AsyncImage(
                         model = "https://openweathermap.org/img/wn/${it}@4x.png",
                         contentDescription = null,
                         error = painterResource(R.drawable.ic_launcher_background),
-                        modifier = Modifier.size(48.dp)
+                        modifier = modifier.size(48.dp)
                     )
                 }
             }
@@ -106,9 +116,7 @@ fun WeatherApp(viewModel: WeatherViewModel = hiltViewModel()) {
                 Text(message, color = Color.Red)
             }
 
-            is NetworkState.None -> {
-
-            }
+            is NetworkState.None -> {}
         }
     }
 }

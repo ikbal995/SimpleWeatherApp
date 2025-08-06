@@ -17,6 +17,7 @@ material = "1.12.0"
 hiltNavigation = "1.2.0"
 coil = "2.4.0"
 moshiConverter = "2.9.0"
+dataStore = "1.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -44,7 +45,7 @@ hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation-compose", v
 coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 moshi-converter = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "moshiConverter" }
 moshi-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }
-
+data-store = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "dataStore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
